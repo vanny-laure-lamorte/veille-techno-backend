@@ -9,6 +9,7 @@ Backend API for a Kanban Board application, built with [NestJS](https://nestjs.c
 - [Environment Configuration](#environment-configuration)
 - [Running the Project](#running-the-project)
 - [Startup Error Handling](#startup-error-handling)
+- [VTB Developer CLI](#vtb-developer-cli)
 - [Swagger](#swagger)
 - [Project Structure](#project-structure)
 
@@ -81,6 +82,14 @@ Example message shown when a variable is missing:
 ```
 Error: Config validation error: "DATABASE_URL" is required
 ```
+## VTB Developer CLI
+The project includes a custom PowerShell CLI to simplify common development commands. All custom CLI commands must be prefixed with vtb.
+The CLI provides shortcuts for Node.js, npm, Docker, and NestJS commands.
+
+```
+vtb <command>
+```
+
 
 ## API Documentation (Swagger)
 
