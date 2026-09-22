@@ -1,0 +1,120 @@
+# Kanban Board API — NestJS
+
+Backend API for a Kanban Board application, built with [NestJS](https://nestjs.com/).
+
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Environment Configuration](#environment-configuration)
+- [Running the Project](#running-the-project)
+- [Startup Error Handling](#startup-error-handling)
+- [Swagger](#swagger)
+- [Project Structure](#project-structure)
+
+## Prerequisites
+
+- Node.js v18 or v20
+- npm
+- PostgreSQL
+
+Check installed versions:
+
+```bash
+node -v
+npm -v
+```
+
+## Installation
+
+```bash
+npm install
+```
+
+## Environment Configuration
+
+The project uses a `.env` and `.env.doker`file at the root for configuration.
+
+Copy the example file and fill it in:
+
+```bash
+cp .env.example .env
+```
+
+Create a `.env.docker` file at the root of the project and define the following environment variables:
+
+| Variable       | Description                        |
+| -------------- | ---------------------------------- |
+| `DB_HOST`      | PostgreSQL database host           |
+| `DB_PORT`      | PostgreSQL database port           |
+| `DB_USERNAME`  | PostgreSQL database username       |
+| `DB_PASSWORD`  | PostgreSQL database password       |
+| `DB_DATABASE`  | PostgreSQL database name           |
+| `DATABASE_URL` | PostgreSQL database connection URL |
+
+## Running the Project
+
+### Development mode
+
+```bash
+npm run start:dev
+```
+
+### Production mode
+
+```bash
+npm run build
+npm run start:prod
+```
+
+Once started, the server responds on the port configured via `PORT` (defaults to `http://localhost:3000`).
+
+## Startup Error Handling
+
+The project validates critical environment variables at startup (via a `Joi` validation schema integrated with `@nestjs/config`).
+
+- **Nominal case**: all required variables are set → the server starts normally and responds on the configured port.
+- **Error case**: a critical variable (e.g. `DATABASE_URL`) is missing or invalid → startup fails immediately with an explicit error message naming the variable at fault, rather than a silent crash or an unreadable low-level error.
+
+Example message shown when a variable is missing:
+
+```
+Error: Config validation error: "DATABASE_URL" is required
+```
+
+## API Documentation (Swagger)
+
+Once the server is running, interactive Swagger documentation is available at:
+
+```
+http://localhost:3000/api
+```
+
+All API endpoints (users, lists, cards) are listed there and can be tested directly from the interface.
+
+## Project Structure
+
+```
+veille-techno-backend/
+├── src/
+│   ├── auth/              # Registration, login, permissions
+│   ├── users/             # User management
+│   ├── lists/             # List management
+│   ├── cards/             # Card management
+│   ├── config/            # Configuration and environment validation
+│   ├── app.module.ts
+│   └── main.ts
+│
+├── test/                  # E2E and integration tests
+│   ├── auth/
+│   ├── users/
+│   ├── lists/
+│   └── cards/
+│
+├── .env                   # Local environment variables
+├── .env.docker            # Docker environment variables
+├── .env.example           # Example environment variables
+├── Dockerfile
+├── docker-compose.yml
+└── README.md
+```
