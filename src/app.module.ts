@@ -5,6 +5,8 @@ import * as Joi from 'joi';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -23,9 +25,12 @@ import { AppService } from './app.service';
         type: 'postgres',
         url: configService.get<string>('DATABASE_URL'),
         autoLoadEntities: true,
-        synchronize: false,
+        synchronize: true,
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
       }),
     }),
+    UserModule,
+    AuthModule,
   ],
 
   controllers: [AppController],
