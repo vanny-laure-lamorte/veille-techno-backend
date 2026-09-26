@@ -10,6 +10,7 @@ Backend API for a Kanban Board application, built with [NestJS](https://nestjs.c
 - [Running the Project](#running-the-project)
 - [Startup Error Handling](#startup-error-handling)
 - [VTB Developer CLI](#vtb-developer-cli)
+- [API Routes](#api-routes)
 - [Swagger](#swagger)
 - [Project Structure](#project-structure)
 
@@ -90,8 +91,31 @@ The CLI provides shortcuts for Node.js, npm, Docker, and NestJS commands.
 vtb <command>
 ```
 
+## API Routes
 
-## API Documentation (Swagger)
+All API routes are prefixed with /api.
+
+**Authentication & Users**
+
+| Method  | Route                | Description                                         | Authentication       | Response                                   |
+| ------- | -------------------- | --------------------------------------------------- | -------------------- | ------------------------------------------ |
+| `POST`  | `/api/auth/register` | Register a new user                                 | No                   | `201 Created` + user without `password`    |
+| `POST`  | `/api/auth/login`    | Login a user                                        | No                   | `200 OK` + JWT `accessToken`               |
+| `GET`   | `/api/users/me`      | Get the currently authenticated user                | Yes                  | `200 OK` + user without `password`         |
+| `PATCH` | `/api/users/{id}`    | Update user information, including role/permissions | Yes + owner or admin | `200 OK` + updated user without `password` |
+
+**Lists**
+
+| Method   | Route             | Description                        | Authentication | Response                     |
+| -------- | ----------------- | ---------------------------------- | -------------- | ---------------------------- |
+| `GET`    | `/api/lists`      | Get the authenticated user's lists | Yes            | `200 OK` + array of lists    |
+| `POST`   | `/api/lists`      | Create a new list                  | Yes            | `201 Created` + created list |
+| `PATCH`  | `/api/lists/{id}` | Update a list                      | Yes + owner    | `200 OK` + updated list      |
+| `DELETE` | `/api/lists/{id}` | Delete a list                      | Yes + owner    | `204 No Content`             |
+
+
+
+## Swagger
 
 Once the server is running, interactive Swagger documentation is available at:
 
