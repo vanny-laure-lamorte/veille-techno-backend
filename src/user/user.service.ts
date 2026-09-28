@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -11,6 +12,7 @@ import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserRole } from '../user/enums/user-role.enum';
 
 const SALT_ROUNDS = 10;
 
@@ -63,13 +65,25 @@ export class UserService {
     return user;
   }
 
-  async update(id: string, dto: UpdateUserDto): Promise<User> {
+  async update(
+    id: string,
+    dto: UpdateUserDto,
+    currentUser: { id: string; role: UserRole },
+      ): Promise<User> {
     const user = await this.findOne(id);
 
+    const isAdmin = currentUser.role === UserRole.ADMIN;
+
+    if (!isAdmin && currentUser.id !== id) {
+      throw new ForbiddenException('You can only update your own profile');
+    }
+
+    if (dto.role !== undefined && !isAdmin) {
+      throw new ForbiddenException('Only an admin can change a role');
+    }
+
     if (dto.email && dto.email !== user.email) {
-      const existing = await this.usersRepository.findOne({
-        where: { email: dto.email },
-      });
+      const existing = await this.usersRepository.findOne({ where: { email: dto.email } });
       if (existing) {
         throw new ConflictException('Email already in use');
       }
@@ -106,5 +120,23 @@ export class UserService {
   }
 
   return user;
-}
+  }
+
+  async onModuleInit() {
+    const email = process.env.ADMIN_EMAIL;
+    const password = process.env.ADMIN_PASSWORD;
+    if (!email || !password) return;
+
+    const existing = await this.usersRepository.findOne({ where: { email } });
+    if (existing) return;
+
+    await this.usersRepository.save(
+      this.usersRepository.create({
+        email,
+        name: 'Admin',
+        role: UserRole.ADMIN,
+        password: await bcrypt.hash(password, SALT_ROUNDS),
+      }),
+    );
+  }
 }
