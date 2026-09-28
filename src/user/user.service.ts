@@ -122,21 +122,34 @@ export class UserService {
   return user;
   }
 
-  async onModuleInit() {
-    const email = process.env.ADMIN_EMAIL;
-    const password = process.env.ADMIN_PASSWORD;
-    if (!email || !password) return;
+async onModuleInit() {
+  const email = process.env.ADMIN_EMAIL;
+  const password = process.env.ADMIN_PASSWORD;
 
-    const existing = await this.usersRepository.findOne({ where: { email } });
-    if (existing) return;
-
-    await this.usersRepository.save(
-      this.usersRepository.create({
-        email,
-        name: 'Admin',
-        role: UserRole.ADMIN,
-        password: await bcrypt.hash(password, SALT_ROUNDS),
-      }),
-    );
+  if (!email || !password) {
+    return;
   }
+
+  let admin = await this.usersRepository.findOne({
+    where: { email },
+  });
+
+  const pepper = process.env.PASSWORD_PEPPER;
+  const passwordHash = await bcrypt.hash(password + pepper, SALT_ROUNDS);
+
+  if (!admin) {
+    admin = this.usersRepository.create({
+      email,
+      name: 'Admin',
+      role: UserRole.ADMIN,
+      password: passwordHash,
+    });
+  } else {
+    admin.password = passwordHash;
+    admin.role = UserRole.ADMIN;
+    admin.name = 'Admin';
+  }
+
+  await this.usersRepository.save(admin);
+}
 }
