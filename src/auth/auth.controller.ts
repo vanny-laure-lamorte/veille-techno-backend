@@ -8,11 +8,11 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 
-import { AuthService } from './auth.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { User } from '../user/entities/user.entity';
 import { ApiOperation} from '@nestjs/swagger';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
