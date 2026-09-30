@@ -200,6 +200,8 @@ Supported commands: `node version`, `npm version`, `docker version`, `docker up`
 
 ## Project Structure
 
+
+```text
 src/
 ├── auth/       # Registration, login, JWT, and authentication guard
 ├── cards/      # Card routes, service, DTOs, and entity
@@ -211,3 +213,5 @@ src/
 scripts/
 └── vtb.ps1     # PowerShell developer CLI
 test/           # End-to-end tests
+
+```
