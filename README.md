@@ -1,0 +1,217 @@
+# Backend Technology Watch — Kanban Board API
+
+Kanban board management API built with NestJS as part of the Master 1 Development program at La Plateforme.
+
+## Table of Contents
+
+- [Technologies](#technologies)
+- [Prerequisites](#prerequisites)
+- [Installation and Configuration](#installation-and-configuration)
+- [Run Locally](#run-locally)
+- [Run with Docker](#run-with-docker)
+- [API and Authentication](#api-and-authentication)
+- [Available Routes](#available-routes)
+- [Swagger Documentation](#swagger-documentation)
+- [Tests and Code Quality](#tests-and-code-quality)
+- [Developer CLI](#developer-cli)
+- [Project Structure](#project-structure)
+
+## Technologies
+
+- **NestJS** for the API
+- **PostgreSQL** and **TypeORM** for data persistence
+- **Passport JWT** and **bcrypt** for authentication
+- **class-validator** and **class-transformer** for DTO validation and transformation
+- **Swagger** for API exploration
+- **Jest** and **Supertest** for testing
+- **Docker Compose** to run the API and PostgreSQL
+
+## Prerequisites
+
+- Node.js 24+
+- PostgreSQL when running the application without Docker, or Docker with Docker Compose
+
+Check the installed versions:
+
+```bash
+node --version
+npm --version
+```
+
+## Installation and Configuration
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create a local `.env` file from the example:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Configure the following variables. The application uses `DATABASE_URL`, `JWT_SECRET`, `JWT_EXPIRES_IN`, and `PASSWORD_PEPPER`. The `DB_*` variables are also used to provide PostgreSQL credentials to Docker Compose.
+
+| Variable | Purpose | Local example |
+| --- | --- | --- |
+| `DATABASE_URL` | PostgreSQL connection URL; required at startup | `postgresql://postgres:password@localhost:5432/veille_techno` |
+| `JWT_SECRET` | Secret used to sign JWTs | Generate a long random value |
+| `JWT_EXPIRES_IN` | JWT lifetime, in a format supported by `ms` | `1h` |
+| `PASSWORD_PEPPER` | Secret appended to passwords during registration and login | A randomly generated secret |
+| `DB_HOST` | PostgreSQL host used by Docker Compose | `postgres` on the Docker network |
+| `DB_PORT` | PostgreSQL port | `5432` |
+| `DB_USERNAME` | PostgreSQL username | `postgres` |
+| `DB_PASSWORD` | PostgreSQL password | A secret value |
+| `DB_DATABASE` | Database name | `veille_techno` |
+| `ADMIN_EMAIL` | Email for the initial administrator account; optional | `admin@example.com` |
+| `ADMIN_PASSWORD` | Password for the initial administrator account; optional | Set locally |
+
+Generate a random JWT secret or password pepper with:
+
+```bash
+node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
+```
+
+The application explicitly validates that `DATABASE_URL` is set at startup. The JWT module also requires `JWT_SECRET` and `JWT_EXPIRES_IN`; registration and login require `PASSWORD_PEPPER`. If both `ADMIN_EMAIL` and `ADMIN_PASSWORD` are set, an administrator account is created or updated at startup. Never commit files containing secrets.
+
+## Run Locally
+
+Start the API in development mode:
+
+```bash
+npm run start:dev
+```
+
+The application listens on port `3000` by default. Override it with `PORT`.
+
+Build and start the compiled application:
+
+```bash
+npm run build
+npm run start:prod
+```
+
+## Run with Docker
+
+Docker Compose starts the API and PostgreSQL. At the repository root, `.env` supplies `DB_USERNAME`, `DB_PASSWORD`, and `DB_DATABASE` to configure the PostgreSQL container. The API container loads its variables from `.env.docker`; create this local file with at least `DATABASE_URL`, `JWT_SECRET`, `JWT_EXPIRES_IN`, and `PASSWORD_PEPPER`. The database host in `DATABASE_URL` must be `postgres`, for example:
+
+```dotenv
+DATABASE_URL=postgresql://postgres:password@postgres:5432/veille_techno
+```
+
+Start the services:
+
+```bash
+docker compose up --build -d
+```
+
+View the logs or stop the containers:
+
+```bash
+docker compose logs -f app
+docker compose down
+```
+
+## API and Authentication
+
+API routes are served at the root (`/auth`, `/users`, `/lists`, `/cards`). `/api` hosts the Swagger UI.
+
+- Registration requires an email address, a name, and a password of at least 8 characters.
+- Login returns an `accessToken` JWT. Send it in the `Authorization: Bearer <token>` header when calling protected routes.
+- Lists and cards require a JWT and are restricted to the owner of the list.
+- Updating a user requires a JWT. A user can update their own profile; an administrator can update other profiles. Only administrators can change a user's role.
+- DTOs are validated globally: unknown properties are rejected and supported types may be transformed.
+- User IDs must be UUIDs. Business errors use NestJS HTTP status codes, including `401` (unauthenticated), `403` (forbidden), `404` (not found), and `409` (email conflict).
+
+## Available Routes
+
+| Method | Route | Access | Description |
+| --- | --- | --- | --- |
+| `POST` | `/auth/register` | Public | Register an account (`email`, `name`, `password`) |
+| `POST` | `/auth/login` | Public | Log in and receive a JWT |
+| `POST` | `/users` | Public | Create a user |
+| `GET` | `/users` | Public | List users |
+| `GET` | `/users/{id}` | Public | Retrieve a user |
+| `PATCH` | `/users/{id}` | JWT | Update your profile or, as an admin, another profile |
+| `DELETE` | `/users/{id}` | Public | Delete a user |
+| `GET` | `/lists` | JWT | List your lists |
+| `POST` | `/lists` | JWT | Create a list (`title`, optional `position`) |
+| `PATCH` | `/lists/{id}` | List owner JWT | Update a list |
+| `DELETE` | `/lists/{id}` | List owner JWT | Delete a list |
+| `GET` | `/lists/{listId}/cards` | List owner JWT | List cards in a list |
+| `POST` | `/lists/{listId}/cards` | List owner JWT | Create a card (`title`, optional `description` and `position`) |
+| `GET` | `/cards/{id}` | List owner JWT | Retrieve a card |
+| `PATCH` | `/cards/{id}` | List owner JWT | Update a card, including moving it with `listId` |
+| `DELETE` | `/cards/{id}` | List owner JWT | Delete a card (`204 No Content`) |
+
+## Swagger Documentation
+
+Start the application and open:
+
+```text
+http://localhost:3000/api
+```
+
+In Swagger, call `POST /auth/register`, then `POST /auth/login`. Copy the `accessToken`, select **Authorize**, and enter the token to try protected routes.
+
+## Tests and Code Quality
+
+Available npm commands:
+
+```bash
+npm run test       # Unit tests
+npm run test:e2e   # End-to-end tests
+npm run test:cov   # Tests with coverage
+npm run lint       # Static analysis with oxlint
+npm run build      # NestJS build
+```
+
+## Developer CLI
+
+A PowerShell shortcut script is available at `scripts/vtb.ps1`. Run it from the repository root:
+
+```powershell
+.\scripts\vtb.ps1 dev
+```
+
+Supported commands: `node version`, `npm version`, `docker version`, `docker up`, `docker down`, `docker ps`, `docker logs`, `dev`, `start:dev`, `build`, `test`, and `test coverage`. For example:
+
+```powershell
+.\scripts\vtb.ps1 test coverage
+```
+
+### Available Commands
+
+| Category    | Command              | Description                                         |
+| ----------- | -------------------- | --------------------------------------------------- |
+| **Node.js** | `vtb node version`   | Display the installed Node.js version               |
+| **npm**     | `vtb npm version`    | Display the installed npm version                   |
+| **Docker**  | `vtb docker version` | Display the installed Docker version                |
+| **Docker**  | `vtb docker up`      | Start Docker services in detached mode              |
+| **Docker**  | `vtb docker down`    | Stop and remove Docker containers                   |
+| **Docker**  | `vtb docker ps`      | Display the status of Docker containers             |
+| **Docker**  | `vtb docker logs`    | Display Docker service logs in real time            |
+| **NestJS**  | `vtb dev`            | Start the NestJS development server with hot reload |
+| **NestJS**  | `vtb start:dev`      | Alias for `vtb dev`                                 |
+| **NestJS**  | `vtb build`          | Build the NestJS application                        |
+| **Tests**   | `vtb test`           | Run the project test suite                          |
+
+## Project Structure
+
+
+```text
+src/
+├── auth/       # Registration, login, JWT, and authentication guard
+├── cards/      # Card routes, service, DTOs, and entity
+├── common/     # Shared types, including the authenticated request
+├── lists/      # List routes, service, DTOs, and entity
+├── user/       # User accounts, roles, DTOs, and entity
+├── app.module.ts
+└── main.ts     # Bootstrap, global validation, and Swagger configuration
+scripts/
+└── vtb.ps1     # PowerShell developer CLI
+test/           # End-to-end tests
+
+```
