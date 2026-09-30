@@ -116,7 +116,7 @@ docker compose down
 
 ## API and Authentication
 
-API routes are served at the root (`/auth`, `/users`, `/lists`, `/cards`). `/api` hosts the Swagger UI.
+All API routes use the `/api` prefix. The Swagger UI is also available at `/api`.
 
 - Registration requires an email address, a name, and a password of at least 8 characters.
 - Login returns an `accessToken` JWT. Send it in the `Authorization: Bearer <token>` header when calling protected routes.
@@ -129,22 +129,23 @@ API routes are served at the root (`/auth`, `/users`, `/lists`, `/cards`). `/api
 
 | Method | Route | Access | Description |
 | --- | --- | --- | --- |
-| `POST` | `/auth/register` | Public | Register an account (`email`, `name`, `password`) |
-| `POST` | `/auth/login` | Public | Log in and receive a JWT |
-| `POST` | `/users` | Public | Create a user |
-| `GET` | `/users` | Public | List users |
-| `GET` | `/users/{id}` | Public | Retrieve a user |
-| `PATCH` | `/users/{id}` | JWT | Update your profile or, as an admin, another profile |
-| `DELETE` | `/users/{id}` | Public | Delete a user |
-| `GET` | `/lists` | JWT | List your lists |
-| `POST` | `/lists` | JWT | Create a list (`title`, optional `position`) |
-| `PATCH` | `/lists/{id}` | List owner JWT | Update a list |
-| `DELETE` | `/lists/{id}` | List owner JWT | Delete a list |
-| `GET` | `/lists/{listId}/cards` | List owner JWT | List cards in a list |
-| `POST` | `/lists/{listId}/cards` | List owner JWT | Create a card (`title`, optional `description` and `position`) |
-| `GET` | `/cards/{id}` | List owner JWT | Retrieve a card |
-| `PATCH` | `/cards/{id}` | List owner JWT | Update a card, including moving it with `listId` |
-| `DELETE` | `/cards/{id}` | List owner JWT | Delete a card (`204 No Content`) |
+| `POST` | `/api/auth/register` | Public | Register an account (`email`, `name`, `password`) |
+| `POST` | `/api/auth/login` | Public | Log in and receive a JWT |
+| `POST` | `/api/users` | Public | Create a user |
+| `GET` | `/api/users` | Public | List users |
+| `GET` | `/api/users/me` | JWT | Retrieve the currently authenticated user's profile |
+| `GET` | `/api/users/{id}` | Public | Retrieve a user |
+| `PATCH` | `/api/users/{id}` | JWT | Update your profile or, as an admin, another profile |
+| `DELETE` | `/api/users/{id}` | Public | Delete a user |
+| `GET` | `/api/lists` | JWT | List your lists |
+| `POST` | `/api/lists` | JWT | Create a list (`title`, optional `position`) |
+| `PATCH` | `/api/lists/{id}` | List owner JWT | Update a list |
+| `DELETE` | `/api/lists/{id}` | List owner JWT | Delete a list |
+| `GET` | `/api/lists/{listId}/cards` | List owner JWT | List cards in a list |
+| `POST` | `/api/lists/{listId}/cards` | List owner JWT | Create a card (`title`, optional `description` and `position`) |
+| `GET` | `/api/cards/{id}` | List owner JWT | Retrieve a card |
+| `PATCH` | `/api/cards/{id}` | List owner JWT | Update a card, including moving it with `listId` |
+| `DELETE` | `/api/cards/{id}` | List owner JWT | Delete a card (`204 No Content`) |
 
 ## Swagger Documentation
 
@@ -154,7 +155,7 @@ Start the application and open:
 http://localhost:3000/api
 ```
 
-In Swagger, call `POST /auth/register`, then `POST /auth/login`. Copy the `accessToken`, select **Authorize**, and enter the token to try protected routes.
+In Swagger, call `POST /api/auth/register`, then `POST /api/auth/login`. Copy the `accessToken`, select **Authorize**, and enter the token to try protected routes such as `GET /api/users/me`.
 
 ## Tests and Code Quality
 

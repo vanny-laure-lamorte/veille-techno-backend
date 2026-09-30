@@ -37,6 +37,14 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get the currently authenticated user' })
+  findMe(@Req() req: AuthRequest) {
+    return this.userService.findOne(req.user.id);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a user by ID' })
   findOne(@Param('id', ParseUUIDPipe) id: string) {
@@ -46,7 +54,9 @@ export class UserController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update a user (own profile, or any user if admin)' })
+  @ApiOperation({
+    summary: 'Update a user (own profile, or any user if admin)',
+  })
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateUserDto: UpdateUserDto,
