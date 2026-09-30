@@ -198,8 +198,6 @@ Supported commands: `node version`, `npm version`, `docker version`, `docker up`
 | **NestJS**  | `vtb build`          | Build the NestJS application                        |
 | **Tests**   | `vtb test`           | Run the project test suite                          |
 
-
-
 ## Project Structure
 
 ```text
@@ -214,4 +212,3 @@ src/
 scripts/
 └── vtb.ps1     # PowerShell developer CLI
 test/           # End-to-end tests
-```
