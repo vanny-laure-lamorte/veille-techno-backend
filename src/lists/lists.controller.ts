@@ -6,12 +6,10 @@ import {
   Delete,
   Body,
   Param,
-  UseGuards,
   Req,
   HttpCode,
 } from '@nestjs/common';
 
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ListsService } from './lists.service';
 import { List } from './entities/list.entity';
 import { CreateListDto } from './dto/create-list.dto';
@@ -22,7 +20,6 @@ import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
 @Controller('lists')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 export class ListsController {
   constructor(private readonly listsService: ListsService) {}
 

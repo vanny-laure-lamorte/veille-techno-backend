@@ -6,13 +6,11 @@ import {
   Delete,
   Body,
   Param,
-  UseGuards,
   Req,
   HttpCode,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CardsService } from './cards.service';
 import { Card } from './entities/card.entity';
 import { CreateCardDto } from './dto/create-card.dto';
@@ -22,7 +20,6 @@ import type { AuthRequest } from '../common/auth-request.interface';
 @ApiTags('Cards')
 @ApiBearerAuth()
 @Controller()
-@UseGuards(JwtAuthGuard)
 export class CardsController {
   constructor(private readonly cardsService: CardsService) {}
 

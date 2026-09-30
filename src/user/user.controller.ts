@@ -8,19 +8,18 @@ import {
   Delete,
   Req,
   ParseUUIDPipe,
-  UseGuards,
   ClassSerializerInterceptor,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import type { AuthRequest } from '../common/auth-request.interface';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
+@ApiBearerAuth()
 @UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -38,7 +37,6 @@ export class UserController {
   }
 
   @Get('me')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get the currently authenticated user' })
   findMe(@Req() req: AuthRequest) {
@@ -52,7 +50,6 @@ export class UserController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Update a user (own profile, or any user if admin)',

@@ -120,6 +120,7 @@ All API routes use the `/api` prefix. The Swagger UI is also available at `/api`
 
 - Registration requires an email address, a name, and a password of at least 8 characters.
 - Login returns an `accessToken` JWT. Send it in the `Authorization: Bearer <token>` header when calling protected routes.
+- Every API route requires a valid JWT except `POST /api/auth/register` and `POST /api/auth/login`.
 - Lists and cards require a JWT and are restricted to the owner of the list.
 - Updating a user requires a JWT. A user can update their own profile; an administrator can update other profiles. Only administrators can change a user's role.
 - DTOs are validated globally: unknown properties are rejected and supported types may be transformed.
@@ -131,12 +132,12 @@ All API routes use the `/api` prefix. The Swagger UI is also available at `/api`
 | --- | --- | --- | --- |
 | `POST` | `/api/auth/register` | Public | Register an account (`email`, `name`, `password`) |
 | `POST` | `/api/auth/login` | Public | Log in and receive a JWT |
-| `POST` | `/api/users` | Public | Create a user |
-| `GET` | `/api/users` | Public | List users |
+| `POST` | `/api/users` | JWT | Create a user |
+| `GET` | `/api/users` | JWT | List users |
 | `GET` | `/api/users/me` | JWT | Retrieve the currently authenticated user's profile |
-| `GET` | `/api/users/{id}` | Public | Retrieve a user |
+| `GET` | `/api/users/{id}` | JWT | Retrieve a user |
 | `PATCH` | `/api/users/{id}` | JWT | Update your profile or, as an admin, another profile |
-| `DELETE` | `/api/users/{id}` | Public | Delete a user |
+| `DELETE` | `/api/users/{id}` | JWT | Delete a user |
 | `GET` | `/api/lists` | JWT | List your lists |
 | `POST` | `/api/lists` | JWT | Create a list (`title`, optional `position`) |
 | `PATCH` | `/api/lists/{id}` | List owner JWT | Update a list |
