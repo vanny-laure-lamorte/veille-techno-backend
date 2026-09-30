@@ -200,7 +200,6 @@ Supported commands: `node version`, `npm version`, `docker version`, `docker up`
 
 ## Project Structure
 
-```text
 src/
 ├── auth/       # Registration, login, JWT, and authentication guard
 ├── cards/      # Card routes, service, DTOs, and entity
