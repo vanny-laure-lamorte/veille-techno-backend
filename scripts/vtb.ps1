@@ -1,3 +1,4 @@
+```powershell
 param(
     [Parameter(ValueFromRemainingArguments = $true)]
     [string[]]$Arguments
@@ -11,7 +12,7 @@ switch ($Command) {
     # Node.js commands
     "node" {
         if ($Argument -eq "version") {
-            node --version       # Display the installed Node.js version
+            node --version
         }
         else {
             Write-Host "Usage: vtb node version"
@@ -21,7 +22,7 @@ switch ($Command) {
     # npm commands
     "npm" {
         if ($Argument -eq "version") {
-            npm --version        # Display the installed npm version
+            npm --version
         }
         else {
             Write-Host "Usage: vtb npm version"
@@ -33,23 +34,23 @@ switch ($Command) {
         switch ($Argument) {
 
             "version" {
-                docker --version              # Display the installed Docker version
+                docker --version
             }
 
             "up" {
-                docker compose up -d          # Start Docker services in detached mode
+                docker compose up -d
             }
 
             "down" {
-                docker compose down           # Stop and remove Docker containers
+                docker compose down
             }
 
             "ps" {
-                docker compose ps             # Display the status of Docker containers
+                docker compose ps
             }
 
             "logs" {
-                docker compose logs -f        # Display Docker service logs in real time
+                docker compose logs -f
             }
 
             default {
@@ -68,22 +69,31 @@ switch ($Command) {
 
     # NestJS development server
     "dev" {
-        npm run start:dev              # Start the NestJS development server with hot reload
+        npm run start:dev
     }
 
     # NestJS development server alias
     "start:dev" {
-        npm run start:dev              # Start the NestJS development server with hot reload
+        npm run start:dev
     }
 
     # NestJS application build
     "build" {
-        npm run build                  # Build the NestJS application
+        npm run build
     }
 
     # Project tests
     "test" {
-        npm run test                   # Run the project test suite
+        switch ($Argument) {
+
+            "coverage" {
+                npm run test:cov
+            }
+
+            default {
+                npm run test
+            }
+        }
     }
 
     # Display the CLI help menu
@@ -114,7 +124,11 @@ switch ($Command) {
         Write-Host "  vtb dev            - Start development server"
         Write-Host "  vtb start:dev      - Start development server"
         Write-Host "  vtb build          - Build the application"
+        Write-Host ""
+
+        Write-Host "Tests" -ForegroundColor Yellow
         Write-Host "  vtb test           - Run tests"
+        Write-Host "  vtb test coverage  - Run tests with coverage"
         Write-Host ""
     }
 }
