@@ -3,7 +3,10 @@
   "rootDir": ".",
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
+  "transformIgnorePatterns": [
+    "node_modules/(?!(@nestjs|@nestjs\\/.*)/)"
+  ],
   "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
+    "^.+\\.(t|j)s$": "@swc/jest"
   }
 }
