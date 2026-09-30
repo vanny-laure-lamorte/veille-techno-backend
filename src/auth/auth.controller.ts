@@ -11,7 +11,7 @@ import {
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { User } from '../user/entities/user.entity';
-import { ApiOperation} from '@nestjs/swagger';
+import { ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Public } from '../common/public.decorator';
 

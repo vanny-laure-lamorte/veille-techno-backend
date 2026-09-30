@@ -17,7 +17,6 @@ import { UpdateListDto } from './dto/update-list.dto';
 import type { AuthRequest } from '../common/auth-request.interface';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
-
 @Controller('lists')
 @ApiBearerAuth()
 export class ListsController {
