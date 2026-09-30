@@ -118,6 +118,17 @@ describe('UserController', () => {
     });
   });
 
+  describe('findMe', () => {
+    it('should return the currently authenticated user', async () => {
+      userServiceMock.findOne.mockResolvedValue(userMock);
+
+      const result = await controller.findMe(requestMock as any);
+
+      expect(userServiceMock.findOne).toHaveBeenCalledWith(userMock.id);
+      expect(result).toEqual(userMock);
+    });
+  });
+
   describe('findOne', () => {
     it('should return a user', async () => {
       userServiceMock.findOne.mockResolvedValue(userMock);

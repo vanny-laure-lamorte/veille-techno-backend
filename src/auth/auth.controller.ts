@@ -11,14 +11,16 @@ import {
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { User } from '../user/entities/user.entity';
-import { ApiOperation} from '@nestjs/swagger';
+import { ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
+import { Public } from '../common/public.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
+  @Public()
   @ApiOperation({ summary: 'Register a new user' })
   @UseInterceptors(ClassSerializerInterceptor)
   register(@Body() dto: CreateUserDto): Promise<User> {
@@ -26,6 +28,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @Public()
   @ApiOperation({ summary: 'Login a user' })
   @HttpCode(HttpStatus.OK)
   login(@Body() dto: LoginDto): Promise<{ accessToken: string }> {
