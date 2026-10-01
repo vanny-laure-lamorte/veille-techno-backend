@@ -5,6 +5,7 @@ Kanban board management API built with NestJS as part of the Master 1 Developmen
 ## Table of Contents
 
 - [Technologies](#technologies)
+- [Versions and Maintenance](#versions-maintenance)
 - [Prerequisites](#prerequisites)
 - [Installation and Configuration](#installation-and-configuration)
 - [Run Locally](#run-locally)
@@ -25,6 +26,36 @@ Kanban board management API built with NestJS as part of the Master 1 Developmen
 - **Swagger** for API exploration
 - **Jest** and **Supertest** for testing
 - **Docker Compose** to run the API and PostgreSQL
+
+## Versions and Maintenance
+
+Versions below are the versions currently installed in the project workspace, resolved from `package-lock.json`, plus the runtime versions used by the local environment and deployment configuration.
+
+| Component | Project version | Where it comes from | Maintenance note |
+| --- | --- | --- | --- |
+| Node.js (local workspace) | `25.3.0` | Local development environment | Odd-numbered Current release; now EOL. Use Node.js 24 LTS for development. |
+| Node.js (Docker and CI) | `24` | Dockerfile and GitHub Actions | Supported LTS line; keep local, CI, and Docker on the same major. |
+| npm (local workspace) | `11.15.0` | Bundled with local Node.js | Use `npm ci` in CI to install exactly the lockfile versions. |
+| NestJS | `12.0.4` (`@nestjs/core`, `common`, `platform-express`) | Runtime dependencies | Keep NestJS packages on matching majors and update compatible patches together. |
+| NestJS CLI | `12.0.3` | Development dependency | Keep the CLI major aligned with the NestJS application. |
+| Express | `5.2.1` | Transitive dependency of `@nestjs/platform-express` | Update through the Nest platform adapter; avoid introducing a second Express version. |
+| TypeScript | `6.0.3` | Development dependency | Check NestJS, SWC, and type-definition compatibility before major upgrades. |
+| TypeORM | `1.1.1` | Runtime dependency | Review migrations and schema behavior when upgrading. |
+| PostgreSQL | `16` (`16-alpine`) | Docker Compose and CI service | Back up data and test migrations before a database major upgrade. |
+| Jest | `30.5.2` | Development dependency | Run unit and end-to-end suites after upgrades. |
+| Oxlint | `1.85.0` | Development dependency | CI runs `npm run lint`. |
+| Prettier | `3.9.8` | Development dependency | Verify formatting after upgrades. |
+| Docker Compose | Host-provided Compose plugin | Local/CI container orchestration | Keep Docker Engine and the Compose plugin updated. |
+
+Other installed top-level packages:
+
+| Group | Installed versions |
+| --- | --- |
+| NestJS adapters and helpers | `@nestjs/config` `12.0.0`, `@nestjs/jwt` `12.0.2`, `@nestjs/mapped-types` `12.0.0`, `@nestjs/passport` `12.0.0`, `@nestjs/swagger` `12.0.1`, `@nestjs/typeorm` `12.0.1`, `@nestjs/schematics` `12.0.0`, `@nestjs/testing` `12.0.4`, `@nestjs/mau` `0.2.8` |
+| Runtime libraries | `pg` `8.23.0`, `bcrypt` `6.0.0`, `passport` `0.7.0`, `passport-jwt` `4.0.1`, `class-validator` `0.15.1`, `class-transformer` `0.5.1`, `joi` `18.2.9`, `reflect-metadata` `0.2.2`, `rxjs` `7.8.2`, `source-map-support` `0.5.21` |
+| Build, test, and type tooling | `@swc/core` `1.16.12`, `@swc/jest` `0.2.39`, `supertest` `7.2.2`, `ts-loader` `9.6.2`, `ts-node` `10.9.2`, `tsconfig-paths` `4.2.0`, `@types/bcrypt` `6.0.0`, `@types/express` `5.0.6`, `@types/jest` `30.0.0`, `@types/node` `24.13.6`, `@types/passport-jwt` `4.0.1`, `@types/supertest` `7.2.1` |
+
+Check dependency updates with `npm outdated`, then review and test them before committing the lockfile. Check the [Node.js release schedule](https://nodejs.org/en/about/previous-releases) before changing the runtime major. As of September 2026, Node.js 20 and 22 are EOL, Node.js 25 is EOL, and Node.js 24 is the supported LTS choice for this project; Node.js 26 is still Current.
 
 ## Prerequisites
 
